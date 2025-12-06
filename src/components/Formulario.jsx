@@ -4,7 +4,7 @@ import { Plus } from 'lucide-react';
 import { collection, addDoc } from 'firebase/firestore';
 import { db } from '../firebase/firebase';
 
-export const Formulario = ({ addTodo }) => {
+export const Formulario = ({ addTodo, useFirebase }) => {
     const [todo, setTodo] = useState({
         title: '',
         description: '',
@@ -51,12 +51,20 @@ export const Formulario = ({ addTodo }) => {
         };
 
         try {
-            const docRef = await addDoc(collection(db, 'todos'), newTodo);
-
-            addTodo({
-                id: docRef.id,
-                ...newTodo,
-            });
+            if (useFirebase) {
+                // Intentar guardar en Firebase
+                const docRef = await addDoc(collection(db, 'todos'), newTodo);
+                addTodo({
+                    id: docRef.id,
+                    ...newTodo,
+                });
+            } else {
+                // Guardar localmente
+                addTodo({
+                    id: Date.now().toString(),
+                    ...newTodo,
+                });
+            }
 
             Swal.fire({
                 position: 'center',
@@ -77,13 +85,28 @@ export const Formulario = ({ addTodo }) => {
             });
         } catch (error) {
             console.error('Error al agregar tarea:', error);
+
+            // Fallback a modo local si falla Firebase
+            addTodo({
+                id: Date.now().toString(),
+                ...newTodo,
+            });
+
             Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'No se pudo agregar la tarea',
+                icon: 'warning',
+                title: 'Tarea guardada localmente',
+                text: 'No se pudo conectar con Firebase. La tarea se guardó en tu navegador.',
                 background: '#0f172a',
                 color: '#e2e8f0',
                 confirmButtonColor: '#6366f1',
+            });
+
+            setTodo({
+                title: '',
+                description: '',
+                priority: false,
+                type: 'datagram',
+                time: '',
             });
         }
     };
