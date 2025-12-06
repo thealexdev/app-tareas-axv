@@ -1,7 +1,7 @@
-import { Trash2, Check, RotateCcw, Star } from 'lucide-react';
+import { Trash2, Check, RotateCcw, Star, Clock } from 'lucide-react';
 
 export const Todo = ({ todo, deleteTodo, updateTodo }) => {
-    const { title, description, state, priority, id } = todo;
+    const { title, description, state, priority, id, time } = todo;
 
     return (
         <div className="bg-slate-950/50 rounded-lg p-3 hover:bg-slate-900/50">
@@ -19,15 +19,28 @@ export const Todo = ({ todo, deleteTodo, updateTodo }) => {
 
                 <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-2 mb-0.5">
-                        <h5
-                            className={`text-sm font-medium ${
-                                state
-                                    ? 'text-slate-500 line-through'
-                                    : 'text-slate-200'
-                            }`}
-                        >
-                            {title}
-                        </h5>
+                        <div className="flex-1">
+                            <h5
+                                className={`text-sm font-medium ${
+                                    state
+                                        ? 'text-slate-500 line-through'
+                                        : 'text-slate-200'
+                                }`}
+                            >
+                                {title}
+                            </h5>
+                            {time && (
+                                <div className="flex items-center gap-1 mt-1">
+                                    <Clock
+                                        size={12}
+                                        className="text-indigo-400"
+                                    />
+                                    <span className="text-xs text-slate-400">
+                                        {time}
+                                    </span>
+                                </div>
+                            )}
+                        </div>
                         {priority && (
                             <Star
                                 size={14}

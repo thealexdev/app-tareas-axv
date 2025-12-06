@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import Swal from 'sweetalert2';
 import { Plus } from 'lucide-react';
+import { collection, addDoc } from 'firebase/firestore';
+import { db } from '../firebase/firebase';
 
 export const Formulario = ({ addTodo }) => {
     const [todo, setTodo] = useState({
@@ -8,11 +10,12 @@ export const Formulario = ({ addTodo }) => {
         description: '',
         priority: false,
         type: 'datagram',
+        time: '',
     });
 
-    const { title, description, priority, type } = todo;
+    const { title, description, priority, type, time } = todo;
 
-    const handleSubmit = e => {
+    const handleSubmit = async e => {
         e.preventDefault();
 
         if (!title.trim()) {
@@ -26,31 +29,66 @@ export const Formulario = ({ addTodo }) => {
             });
         }
 
-        addTodo({
-            id: Date.now(),
-            ...todo,
+        if (type === 'diaria' && !time) {
+            return Swal.fire({
+                icon: 'error',
+                title: 'Oops',
+                text: 'La hora es obligatoria para tareas diarias',
+                background: '#0f172a',
+                color: '#e2e8f0',
+                confirmButtonColor: '#6366f1',
+            });
+        }
+
+        const newTodo = {
+            title,
+            description,
+            priority,
+            type,
+            time: type === 'diaria' ? time : null,
             state: false,
-        });
+            createdAt: new Date().toISOString(),
+        };
 
-        Swal.fire({
-            position: 'center',
-            icon: 'success',
-            title: 'Todo agregado',
-            showConfirmButton: false,
-            timer: 1000,
-            background: '#0f172a',
-            color: '#e2e8f0',
-        });
+        try {
+            const docRef = await addDoc(collection(db, 'todos'), newTodo);
 
-        setTodo({
-            title: '',
-            description: '',
-            priority: false,
-            type: 'datagram',
-        });
+            addTodo({
+                id: docRef.id,
+                ...newTodo,
+            });
+
+            Swal.fire({
+                position: 'center',
+                icon: 'success',
+                title: 'Tarea agregada',
+                showConfirmButton: false,
+                timer: 1000,
+                background: '#0f172a',
+                color: '#e2e8f0',
+            });
+
+            setTodo({
+                title: '',
+                description: '',
+                priority: false,
+                type: 'datagram',
+                time: '',
+            });
+        } catch (error) {
+            console.error('Error al agregar tarea:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'No se pudo agregar la tarea',
+                background: '#0f172a',
+                color: '#e2e8f0',
+                confirmButtonColor: '#6366f1',
+            });
+        }
     };
 
-    const hanldeChange = e => {
+    const handleChange = e => {
         const { name, type, checked, value } = e.target;
 
         setTodo({
@@ -73,7 +111,7 @@ export const Formulario = ({ addTodo }) => {
                         className="w-full bg-slate-950/50 rounded-md px-3 py-2 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
                         name="title"
                         value={title}
-                        onChange={hanldeChange}
+                        onChange={handleChange}
                     />
                 </div>
                 <div>
@@ -82,7 +120,7 @@ export const Formulario = ({ addTodo }) => {
                         placeholder="Descripción (opcional)"
                         name="description"
                         value={description}
-                        onChange={hanldeChange}
+                        onChange={handleChange}
                         rows="3"
                     />
                 </div>
@@ -92,13 +130,24 @@ export const Formulario = ({ addTodo }) => {
                         className="w-full bg-slate-950/50 rounded-md px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 cursor-pointer"
                         name="type"
                         value={type}
-                        onChange={hanldeChange}
+                        onChange={handleChange}
                     >
                         <option value="datagram">Datagram</option>
                         <option value="freelance">Freelance</option>
                         <option value="diaria">Diaria</option>
                         <option value="urgente">Urgente</option>
                     </select>
+
+                    {type === 'diaria' && (
+                        <input
+                            type="time"
+                            name="time"
+                            value={time}
+                            onChange={handleChange}
+                            className="w-full bg-slate-950/50 rounded-md px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 cursor-pointer"
+                            placeholder="Hora"
+                        />
+                    )}
 
                     <div className="flex items-center gap-2 bg-slate-950/50 rounded-md px-3 py-2">
                         <input
@@ -107,7 +156,7 @@ export const Formulario = ({ addTodo }) => {
                             className="w-4 h-4 rounded bg-slate-900 text-indigo-500 focus:ring-2 focus:ring-indigo-500/30 cursor-pointer"
                             id="inputCheck"
                             checked={priority}
-                            onChange={hanldeChange}
+                            onChange={handleChange}
                         />
                         <label
                             htmlFor="inputCheck"

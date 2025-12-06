@@ -21,18 +21,30 @@ export const Todos = ({ todos, deleteTodo, updateTodo }) => {
     const todosUrgentes = todos.filter(todo => todo.type === 'urgente');
 
     const getTodosActivos = () => {
+        let activeTodos = [];
+
         switch (activeTab) {
             case 'datagram':
-                return todosDatagrama;
+                activeTodos = todosDatagrama;
+                break;
             case 'freelance':
-                return todosFreelance;
+                activeTodos = todosFreelance;
+                break;
             case 'diaria':
-                return todosDiarias;
+                activeTodos = [...todosDiarias].sort((a, b) => {
+                    if (!a.time) return 1;
+                    if (!b.time) return -1;
+                    return a.time.localeCompare(b.time);
+                });
+                break;
             case 'urgente':
-                return todosUrgentes;
+                activeTodos = todosUrgentes;
+                break;
             default:
-                return [];
+                activeTodos = [];
         }
+
+        return activeTodos;
     };
 
     const todosActivos = getTodosActivos();
