@@ -4,7 +4,7 @@ import { Plus } from 'lucide-react';
 import { collection, addDoc } from 'firebase/firestore';
 import { db } from '../firebase/firebase';
 
-export const Formulario = ({ addTodo, useFirebase }) => {
+export const Formulario = ({ addTodo, useFirebase, userId }) => {
     const [todo, setTodo] = useState({
         title: '',
         description: '',
@@ -47,19 +47,18 @@ export const Formulario = ({ addTodo, useFirebase }) => {
             type,
             time: type === 'diaria' ? time : null,
             state: false,
+            userId: userId, // Asociar la tarea al usuario
             createdAt: new Date().toISOString(),
         };
 
         try {
             if (useFirebase) {
-                // Intentar guardar en Firebase
                 const docRef = await addDoc(collection(db, 'todos'), newTodo);
                 addTodo({
                     id: docRef.id,
                     ...newTodo,
                 });
             } else {
-                // Guardar localmente
                 addTodo({
                     id: Date.now().toString(),
                     ...newTodo,
@@ -86,7 +85,6 @@ export const Formulario = ({ addTodo, useFirebase }) => {
         } catch (error) {
             console.error('Error al agregar tarea:', error);
 
-            // Fallback a modo local si falla Firebase
             addTodo({
                 id: Date.now().toString(),
                 ...newTodo,

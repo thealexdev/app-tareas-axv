@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Formulario } from './components/Formulario';
 import { Todos } from './components/Todos';
 import { Pomodoro } from './components/Pomodoro';
+import { LogOut, User } from 'lucide-react';
 import {
     collection,
     getDocs,
@@ -9,10 +10,14 @@ import {
     updateDoc,
     deleteDoc,
     onSnapshot,
+    query,
+    where,
 } from 'firebase/firestore';
-import { db } from './firebase/firebase';
+import { db, auth } from './firebase/firebase';
+import { signOut } from 'firebase/auth';
+import Swal from 'sweetalert2';
 
-export const App = () => {
+export const App = ({ user, onLogout }) => {
     const [todos, setTodos] = useState([]);
     const [loading, setLoading] = useState(true);
     const [useFirebase, setUseFirebase] = useState(true);
@@ -22,9 +27,14 @@ export const App = () => {
 
         const initializeApp = async () => {
             try {
-                // Intentar conectar con Firebase
-                unsubscribe = onSnapshot(
+                // Filtrar todos del usuario actual
+                const todosQuery = query(
                     collection(db, 'todos'),
+                    where('userId', '==', user.uid)
+                );
+
+                unsubscribe = onSnapshot(
+                    todosQuery,
                     snapshot => {
                         const todosData = snapshot.docs.map(doc => ({
                             id: doc.id,
@@ -37,9 +47,8 @@ export const App = () => {
                     },
                     error => {
                         console.error('❌ Error de Firebase:', error);
-                        // Fallback a localStorage
                         const localTodos = JSON.parse(
-                            localStorage.getItem('todos') || '[]'
+                            localStorage.getItem(`todos_${user.uid}`) || '[]'
                         );
                         setTodos(localTodos);
                         setUseFirebase(false);
@@ -49,9 +58,8 @@ export const App = () => {
                 );
             } catch (error) {
                 console.error('❌ Error al inicializar Firebase:', error);
-                // Fallback a localStorage
                 const localTodos = JSON.parse(
-                    localStorage.getItem('todos') || '[]'
+                    localStorage.getItem(`todos_${user.uid}`) || '[]'
                 );
                 setTodos(localTodos);
                 setUseFirebase(false);
@@ -61,7 +69,6 @@ export const App = () => {
 
         initializeApp();
 
-        // Resetear tareas diarias
         resetDailyTasks();
         const interval = setInterval(() => {
             resetDailyTasks();
@@ -73,14 +80,13 @@ export const App = () => {
             }
             clearInterval(interval);
         };
-    }, []);
+    }, [user.uid]);
 
-    // Guardar en localStorage cuando cambien los todos (fallback)
     useEffect(() => {
         if (!useFirebase) {
-            localStorage.setItem('todos', JSON.stringify(todos));
+            localStorage.setItem(`todos_${user.uid}`, JSON.stringify(todos));
         }
-    }, [todos, useFirebase]);
+    }, [todos, useFirebase, user.uid]);
 
     const resetDailyTasks = async () => {
         const lastReset = localStorage.getItem('lastDailyReset');
@@ -98,7 +104,10 @@ export const App = () => {
             if (useFirebase) {
                 try {
                     const querySnapshot = await getDocs(
-                        collection(db, 'todos')
+                        query(
+                            collection(db, 'todos'),
+                            where('userId', '==', user.uid)
+                        )
                     );
                     const resetPromises = [];
 
@@ -119,7 +128,6 @@ export const App = () => {
                     console.error('Error al resetear tareas diarias:', error);
                 }
             } else {
-                // Reset con localStorage
                 const updatedTodos = todos.map(todo => {
                     if (todo.type === 'diaria' && todo.state === true) {
                         return { ...todo, state: false };
@@ -170,6 +178,48 @@ export const App = () => {
         return [...arrayTodos].sort((a, b) => b.priority - a.priority);
     };
 
+    const handleLogout = async () => {
+        const result = await Swal.fire({
+            title: '¿Cerrar sesión?',
+            text: 'Se guardará tu progreso',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#6366f1',
+            cancelButtonColor: '#64748b',
+            confirmButtonText: 'Sí, cerrar sesión',
+            cancelButtonText: 'Cancelar',
+            background: '#0f172a',
+            color: '#e2e8f0',
+        });
+
+        if (result.isConfirmed) {
+            try {
+                await signOut(auth);
+                onLogout();
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡Hasta pronto!',
+                    text: 'Sesión cerrada correctamente',
+                    background: '#0f172a',
+                    color: '#e2e8f0',
+                    confirmButtonColor: '#6366f1',
+                    timer: 1500,
+                    showConfirmButton: false,
+                });
+            } catch (error) {
+                console.error('Error al cerrar sesión:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'No se pudo cerrar sesión',
+                    background: '#0f172a',
+                    color: '#e2e8f0',
+                    confirmButtonColor: '#6366f1',
+                });
+            }
+        }
+    };
+
     if (loading) {
         return (
             <div className="min-h-screen bg-slate-950 flex items-center justify-center">
@@ -184,6 +234,23 @@ export const App = () => {
     return (
         <div className="min-h-screen bg-slate-950 p-4">
             <div className="max-w-7xl mx-auto">
+                {/* Header con info del usuario */}
+                <div className="mb-4 flex items-center justify-end gap-3">
+                    <div className="bg-slate-900/50 rounded-lg px-4 py-2 flex items-center gap-2">
+                        <User size={16} className="text-indigo-400" />
+                        <span className="text-sm text-slate-300">
+                            {user.displayName || user.email}
+                        </span>
+                    </div>
+                    <button
+                        onClick={handleLogout}
+                        className="bg-slate-900/50 hover:bg-red-600/20 text-slate-300 hover:text-red-400 rounded-lg px-4 py-2 flex items-center gap-2 text-sm"
+                    >
+                        <LogOut size={16} />
+                        Cerrar sesión
+                    </button>
+                </div>
+
                 {!useFirebase && (
                     <div className="mb-3 bg-amber-900/20 border border-amber-600/30 rounded-lg p-3">
                         <p className="text-amber-400 text-xs text-center">
@@ -198,6 +265,7 @@ export const App = () => {
                         <Formulario
                             addTodo={addTodo}
                             useFirebase={useFirebase}
+                            userId={user.uid}
                         />
                     </div>
                     <div className="lg:col-span-2">
