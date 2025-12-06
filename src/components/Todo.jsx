@@ -4,25 +4,26 @@ export const Todo = ({ todo, deleteTodo, updateTodo }) => {
     const { title, description, state, priority, id } = todo;
 
     return (
-        <li className="bg-[#0d1117] border border-[#30363d] rounded-lg p-2 hover:border-[#58a6ff] transition-all duration-200">
-            <div className="flex items-start gap-2">
+        <div className="bg-slate-950/50 rounded-lg p-3 hover:bg-slate-900/50">
+            <div className="flex items-start gap-2.5">
                 <button
                     onClick={() => updateTodo(id)}
-                    className={`mt-0.5 flex-shrink-0 w-4 h-4 rounded border-2 flex items-center justify-center transition-all duration-200 ${
+                    className={`mt-0.5 flex-shrink-0 w-4 h-4 rounded border-2 flex items-center justify-center ${
                         state
-                            ? 'bg-[#238636] border-[#238636]'
-                            : 'border-[#30363d] hover:border-[#58a6ff]'
+                            ? 'bg-emerald-600 border-emerald-600'
+                            : 'border-slate-700 hover:border-indigo-500'
                     }`}
                 >
-                    {state && <Check size={10} className="text-white" />}
+                    {state && <Check size={12} className="text-white" />}
                 </button>
+
                 <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-2 mb-0.5">
                         <h5
                             className={`text-sm font-medium ${
                                 state
-                                    ? 'text-[#8b949e] line-through'
-                                    : 'text-[#c9d1d9]'
+                                    ? 'text-slate-500 line-through'
+                                    : 'text-slate-200'
                             }`}
                         >
                             {title}
@@ -30,16 +31,17 @@ export const Todo = ({ todo, deleteTodo, updateTodo }) => {
                         {priority && (
                             <Star
                                 size={14}
-                                className="flex-shrink-0 text-[#ffa657] fill-[#ffa657]"
+                                className="flex-shrink-0 text-amber-400 fill-amber-400"
                             />
                         )}
                     </div>
+
                     {description && (
                         <p
-                            className={`text-xs mb-1.5 ${
+                            className={`text-xs mb-2 ${
                                 state
-                                    ? 'text-[#6e7681] line-through'
-                                    : 'text-[#8b949e]'
+                                    ? 'text-slate-600 line-through'
+                                    : 'text-slate-400'
                             }`}
                         >
                             {description}
@@ -49,25 +51,25 @@ export const Todo = ({ todo, deleteTodo, updateTodo }) => {
                     <div className="flex gap-1.5">
                         <button
                             onClick={() => updateTodo(id)}
-                            className="bg-[#21262d] hover:bg-[#30363d] text-[#c9d1d9] text-xs px-2 py-0.5 rounded transition-colors duration-200 flex items-center gap-1"
+                            className="bg-slate-800/50 hover:bg-slate-700/50 text-slate-300 text-xs px-2 py-1 rounded-md flex items-center gap-1"
                         >
                             {state ? (
-                                <RotateCcw size={10} />
+                                <RotateCcw size={12} />
                             ) : (
-                                <Check size={10} />
+                                <Check size={12} />
                             )}
                             {state ? 'Reabrir' : 'Completar'}
                         </button>
                         <button
                             onClick={() => deleteTodo(id)}
-                            className="bg-[#21262d] hover:bg-[#da3633] text-[#c9d1d9] hover:text-white text-xs px-2 py-0.5 rounded transition-colors duration-200 flex items-center gap-1"
+                            className="bg-slate-800/50 hover:bg-red-600 text-slate-300 hover:text-white text-xs px-2 py-1 rounded-md flex items-center gap-1"
                         >
-                            <Trash2 size={10} />
+                            <Trash2 size={12} />
                             Eliminar
                         </button>
                     </div>
                 </div>
             </div>
-        </li>
+        </div>
     );
 };

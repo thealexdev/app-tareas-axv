@@ -8,7 +8,6 @@ const initialStateTodos = JSON.parse(localStorage.getItem('todos')) || [];
 export const App = () => {
     const [todos, setTodos] = useState(initialStateTodos);
 
-    // Función para resetear tareas diarias
     const resetDailyTasks = () => {
         const lastReset = localStorage.getItem('lastDailyReset');
         const now = new Date();
@@ -21,7 +20,6 @@ export const App = () => {
             0
         );
 
-        // Si es después de la 1 AM y no se ha reseteado hoy
         if (!lastReset || new Date(lastReset) < today1AM) {
             const updatedTodos = todos.map(todo => {
                 if (todo.type === 'diaria' && todo.state === true) {
@@ -37,14 +35,10 @@ export const App = () => {
     };
 
     useEffect(() => {
-        // Resetear tareas diarias al cargar la app
         resetDailyTasks();
-
-        // Verificar cada minuto si es necesario resetear
         const interval = setInterval(() => {
             resetDailyTasks();
-        }, 60000); // Cada 60 segundos
-
+        }, 60000);
         return () => clearInterval(interval);
     }, [todos]);
 
@@ -76,20 +70,20 @@ export const App = () => {
         arrayTodos.sort((a, b) => b.priority - a.priority);
 
     return (
-        <div className="h-screen bg-[#010409] p-4 overflow-hidden">
-            <div className="max-w-7xl mx-auto h-full flex flex-col">
-                <header className="mb-3 flex-shrink-0">
-                    <h1 className="text-xl font-bold text-[#c9d1d9] flex items-center gap-2">
-                        <ListTodo size={24} />
+        <div className="min-h-screen bg-slate-950 p-4">
+            <div className="max-w-7xl mx-auto">
+                <header className="mb-4">
+                    <h1 className="text-lg font-semibold text-slate-100 flex items-center gap-2">
+                        <ListTodo size={20} className="text-indigo-400" />
                         Gestor de Tareas
                     </h1>
                 </header>
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 flex-1 overflow-hidden">
-                    <div className="lg:col-span-1 h-full overflow-hidden">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
+                    <div className="lg:col-span-1">
                         <Formulario addTodo={addTodo} />
                     </div>
-                    <div className="lg:col-span-2 h-full overflow-hidden">
+                    <div className="lg:col-span-2">
                         <Todos
                             todos={orderTodo(todos)}
                             deleteTodo={deleteTodo}

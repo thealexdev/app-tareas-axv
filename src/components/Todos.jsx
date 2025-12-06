@@ -53,94 +53,92 @@ export const Todos = ({ todos, deleteTodo, updateTodo }) => {
     };
 
     return (
-        <div className="bg-[#0d1117] border border-[#30363d] rounded-lg p-3 h-full flex flex-col">
+        <div className="bg-slate-900/50 rounded-lg p-3">
             <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
                 <div className="flex gap-1.5 flex-wrap">
                     <button
                         onClick={() => setActiveTab('datagram')}
-                        className={`flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-medium transition-colors ${
+                        className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium ${
                             activeTab === 'datagram'
-                                ? 'bg-[#238636] text-white'
-                                : 'bg-[#21262d] text-[#8b949e] hover:text-[#c9d1d9] hover:bg-[#30363d]'
+                                ? 'bg-indigo-600 text-white'
+                                : 'bg-slate-800/50 text-slate-400 hover:text-slate-300 hover:bg-slate-700/50'
                         }`}
                     >
-                        <Database size={12} />
+                        <Database size={14} />
                         Datagram
                     </button>
                     <button
                         onClick={() => setActiveTab('freelance')}
-                        className={`flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-medium transition-colors ${
+                        className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium ${
                             activeTab === 'freelance'
-                                ? 'bg-[#238636] text-white'
-                                : 'bg-[#21262d] text-[#8b949e] hover:text-[#c9d1d9] hover:bg-[#30363d]'
+                                ? 'bg-indigo-600 text-white'
+                                : 'bg-slate-800/50 text-slate-400 hover:text-slate-300 hover:bg-slate-700/50'
                         }`}
                     >
-                        <Briefcase size={12} />
+                        <Briefcase size={14} />
                         Freelance
                     </button>
                     <button
                         onClick={() => setActiveTab('diaria')}
-                        className={`flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-medium transition-colors ${
+                        className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium ${
                             activeTab === 'diaria'
-                                ? 'bg-[#238636] text-white'
-                                : 'bg-[#21262d] text-[#8b949e] hover:text-[#c9d1d9] hover:bg-[#30363d]'
+                                ? 'bg-indigo-600 text-white'
+                                : 'bg-slate-800/50 text-slate-400 hover:text-slate-300 hover:bg-slate-700/50'
                         }`}
                     >
-                        <Calendar size={12} />
+                        <Calendar size={14} />
                         Diaria
                     </button>
                     <button
                         onClick={() => setActiveTab('urgente')}
-                        className={`flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-medium transition-colors ${
+                        className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium ${
                             activeTab === 'urgente'
-                                ? 'bg-[#238636] text-white'
-                                : 'bg-[#21262d] text-[#8b949e] hover:text-[#c9d1d9] hover:bg-[#30363d]'
+                                ? 'bg-indigo-600 text-white'
+                                : 'bg-slate-800/50 text-slate-400 hover:text-slate-300 hover:bg-slate-700/50'
                         }`}
                     >
-                        <AlertTriangle size={12} />
+                        <AlertTriangle size={14} />
                         Urgente
                     </button>
                 </div>
                 <div className="flex gap-2 text-xs">
-                    <div className="flex items-center gap-1.5 bg-[#161b22] border border-[#30363d] px-2 py-1 rounded">
-                        <Clock size={12} className="text-[#58a6ff]" />
-                        <span className="text-[#c9d1d9] font-medium">
+                    <div className="flex items-center gap-1.5 bg-slate-800/50 px-2 py-1 rounded-md">
+                        <Clock size={14} className="text-amber-400" />
+                        <span className="text-slate-300 font-medium">
                             {pendientes}
                         </span>
                     </div>
-                    <div className="flex items-center gap-1.5 bg-[#161b22] border border-[#30363d] px-2 py-1 rounded">
-                        <CheckCircle2 size={12} className="text-[#238636]" />
-                        <span className="text-[#c9d1d9] font-medium">
+                    <div className="flex items-center gap-1.5 bg-slate-800/50 px-2 py-1 rounded-md">
+                        <CheckCircle2 size={14} className="text-emerald-400" />
+                        <span className="text-slate-300 font-medium">
                             {completados}
                         </span>
                     </div>
                 </div>
             </div>
 
-            <div className="flex-1 overflow-y-auto pr-1">
-                <ul className="space-y-1.5">
-                    {todosActivos.map(todo => (
-                        <Todo
-                            key={todo.id}
-                            todo={todo}
-                            deleteTodo={deleteTodo}
-                            updateTodo={updateTodo}
-                        />
-                    ))}
-                    {todosActivos.length === 0 && (
-                        <li className="bg-[#161b22] border border-[#30363d] rounded-lg p-6 text-center">
-                            <div className="flex flex-col items-center gap-2">
-                                <CheckCircle2
-                                    size={32}
-                                    className="text-[#30363d]"
-                                />
-                                <p className="text-[#8b949e] text-sm">
-                                    {getEmptyMessage()}
-                                </p>
-                            </div>
-                        </li>
-                    )}
-                </ul>
+            <div className="space-y-2 max-h-[calc(100vh-200px)] overflow-y-auto pr-1">
+                {todosActivos.map(todo => (
+                    <Todo
+                        key={todo.id}
+                        todo={todo}
+                        deleteTodo={deleteTodo}
+                        updateTodo={updateTodo}
+                    />
+                ))}
+                {todosActivos.length === 0 && (
+                    <div className="bg-slate-950/50 rounded-lg p-6 text-center">
+                        <div className="flex flex-col items-center gap-2">
+                            <CheckCircle2
+                                size={40}
+                                className="text-slate-700"
+                            />
+                            <p className="text-slate-500 text-sm">
+                                {getEmptyMessage()}
+                            </p>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );
