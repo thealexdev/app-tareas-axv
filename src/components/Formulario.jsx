@@ -1,15 +1,21 @@
 import React, { useState } from 'react';
 import Swal from 'sweetalert2';
-import { Plus } from 'lucide-react';
+import { Plus, Settings } from 'lucide-react';
 import { collection, addDoc } from 'firebase/firestore';
 import { db } from '../firebase/firebase';
 
-export const Formulario = ({ addTodo, useFirebase, userId }) => {
+export const Formulario = ({
+    addTodo,
+    useFirebase,
+    userId,
+    tiposTareas,
+    onOpenTiposModal,
+}) => {
     const [todo, setTodo] = useState({
         title: '',
         description: '',
         priority: false,
-        type: 'datagram',
+        type: tiposTareas[0]?.id || 'diaria',
         time: '',
     });
 
@@ -29,11 +35,13 @@ export const Formulario = ({ addTodo, useFirebase, userId }) => {
             });
         }
 
-        if (type === 'diaria' && !time) {
+        // Verificar si el tipo seleccionado requiere hora
+        const tipoSeleccionado = tiposTareas.find(t => t.id === type);
+        if (tipoSeleccionado?.requiresTime && !time) {
             return Swal.fire({
                 icon: 'error',
                 title: 'Oops',
-                text: 'La hora es obligatoria para tareas diarias',
+                text: `La hora es obligatoria para tareas de tipo "${tipoSeleccionado.nombre}"`,
                 background: '#0f172a',
                 color: '#e2e8f0',
                 confirmButtonColor: '#6366f1',
@@ -45,9 +53,9 @@ export const Formulario = ({ addTodo, useFirebase, userId }) => {
             description,
             priority,
             type,
-            time: type === 'diaria' ? time : null,
+            time: tipoSeleccionado?.requiresTime ? time : null,
             state: false,
-            userId: userId, // Asociar la tarea al usuario
+            userId: userId,
             createdAt: new Date().toISOString(),
         };
 
@@ -79,7 +87,7 @@ export const Formulario = ({ addTodo, useFirebase, userId }) => {
                 title: '',
                 description: '',
                 priority: false,
-                type: 'datagram',
+                type: tiposTareas[0]?.id || 'diaria',
                 time: '',
             });
         } catch (error) {
@@ -103,7 +111,7 @@ export const Formulario = ({ addTodo, useFirebase, userId }) => {
                 title: '',
                 description: '',
                 priority: false,
-                type: 'datagram',
+                type: tiposTareas[0]?.id || 'diaria',
                 time: '',
             });
         }
@@ -118,12 +126,24 @@ export const Formulario = ({ addTodo, useFirebase, userId }) => {
         });
     };
 
+    const tipoSeleccionado = tiposTareas.find(t => t.id === type);
+
     return (
         <div className="bg-slate-900/50 rounded-lg p-3">
-            <h2 className="text-sm font-medium text-slate-300 mb-3 flex items-center gap-2">
-                <Plus size={16} className="text-indigo-400" />
-                Nueva Tarea
-            </h2>
+            <div className="flex items-center justify-between mb-3">
+                <h2 className="text-sm font-medium text-slate-300 flex items-center gap-2">
+                    <Plus size={16} className="text-indigo-400" />
+                    Nueva Tarea
+                </h2>
+                <button
+                    onClick={onOpenTiposModal}
+                    className="flex items-center gap-1.5 px-2 py-1 text-xs text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 rounded-md transition-colors"
+                    title="Gestionar tipos de tareas"
+                >
+                    <Settings size={14} />
+                    Agregar tipo
+                </button>
+            </div>
             <form onSubmit={handleSubmit} className="space-y-3">
                 <div>
                     <input
@@ -153,13 +173,14 @@ export const Formulario = ({ addTodo, useFirebase, userId }) => {
                         value={type}
                         onChange={handleChange}
                     >
-                        <option value="datagram">Datagram</option>
-                        <option value="freelance">Freelance</option>
-                        <option value="diaria">Diaria</option>
-                        <option value="urgente">Urgente</option>
+                        {tiposTareas.map(tipo => (
+                            <option key={tipo.id} value={tipo.id}>
+                                {tipo.nombre}
+                            </option>
+                        ))}
                     </select>
 
-                    {type === 'diaria' && (
+                    {tipoSeleccionado?.requiresTime && (
                         <input
                             type="time"
                             name="time"

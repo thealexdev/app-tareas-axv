@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { Formulario } from './components/Formulario';
 import { Todos } from './components/Todos';
 import { Pomodoro } from './components/Pomodoro';
+import { TipoTareaModal } from './components/TipoTareaModal';
+import { useTiposTareas } from './hooks/useTiposTareas';
 import { LogOut, User } from 'lucide-react';
 import {
     collection,
@@ -21,6 +23,11 @@ export const App = ({ user, onLogout }) => {
     const [todos, setTodos] = useState([]);
     const [loading, setLoading] = useState(true);
     const [useFirebase, setUseFirebase] = useState(true);
+    const [isTiposModalOpen, setIsTiposModalOpen] = useState(false);
+
+    // Hook para gestionar tipos de tareas
+    const { tiposTareas, addTipoTarea, editTipoTarea, deleteTipoTarea } =
+        useTiposTareas();
 
     useEffect(() => {
         let unsubscribe = null;
@@ -266,6 +273,8 @@ export const App = ({ user, onLogout }) => {
                             addTodo={addTodo}
                             useFirebase={useFirebase}
                             userId={user.uid}
+                            tiposTareas={tiposTareas}
+                            onOpenTiposModal={() => setIsTiposModalOpen(true)}
                         />
                     </div>
                     <div className="lg:col-span-2">
@@ -273,6 +282,7 @@ export const App = ({ user, onLogout }) => {
                             todos={orderTodo(todos)}
                             deleteTodo={deleteTodo}
                             updateTodo={updateTodo}
+                            tiposTareas={tiposTareas}
                         />
                     </div>
                 </div>
@@ -283,6 +293,16 @@ export const App = ({ user, onLogout }) => {
                     </div>
                 </div>
             </div>
+
+            {/* Modal de gestión de tipos */}
+            <TipoTareaModal
+                isOpen={isTiposModalOpen}
+                onClose={() => setIsTiposModalOpen(false)}
+                tiposTareas={tiposTareas}
+                onAddTipo={addTipoTarea}
+                onEditTipo={editTipoTarea}
+                onDeleteTipo={deleteTipoTarea}
+            />
         </div>
     );
 };
