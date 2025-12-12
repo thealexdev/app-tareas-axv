@@ -3,7 +3,7 @@ import { Formulario } from './components/Formulario';
 import { Todos } from './components/Todos';
 import { Pomodoro } from './components/Pomodoro';
 import { TipoTareaModal } from './components/TipoTareaModal';
-import { useTiposTareas } from './hooks/useTiposTareas';
+import { useTiposTareas } from './hooks/useTipoTareas';
 import { LogOut, User } from 'lucide-react';
 import {
     collection,
