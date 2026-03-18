@@ -1,15 +1,17 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { onAuthStateChanged } from 'firebase/auth';
+
 import { auth } from '../firebase/firebase';
 import { Login } from '../auth/Login';
 import { App } from '../App';
+import { Page } from '../page/Page';
 
 export const AppRouter = () => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Escuchar cambios en el estado de autenticación
         const unsubscribe = onAuthStateChanged(auth, currentUser => {
             setUser(currentUser);
             setLoading(false);
@@ -38,12 +40,36 @@ export const AppRouter = () => {
     }
 
     return (
-        <>
-            {user ? (
-                <App user={user} onLogout={handleLogout} />
-            ) : (
-                <Login onLogin={handleLogin} />
-            )}
-        </>
+        <Routes>
+            {/* Landing */}
+            <Route path="/" element={<Page />} />
+
+            {/* Login */}
+            <Route
+                path="/login"
+                element={
+                    user ? (
+                        <Navigate to="/app" />
+                    ) : (
+                        <Login onLogin={handleLogin} />
+                    )
+                }
+            />
+
+            {/* App privada */}
+            <Route
+                path="/app"
+                element={
+                    user ? (
+                        <App user={user} onLogout={handleLogout} />
+                    ) : (
+                        <Navigate to="/login" />
+                    )
+                }
+            />
+
+            {/* Catch all */}
+            <Route path="*" element={<Navigate to="/" />} />
+        </Routes>
     );
 };

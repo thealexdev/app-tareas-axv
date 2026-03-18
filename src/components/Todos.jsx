@@ -1,23 +1,36 @@
 import { useState } from 'react';
 import { Todo } from './Todo';
-import { CheckCircle2, Clock } from 'lucide-react';
+import {
+    FiCheckCircle,
+    FiClock,
+    FiDatabase,
+    FiBriefcase,
+    FiCalendar,
+    FiAlertTriangle,
+    FiStar,
+    FiTarget,
+    FiBook,
+    FiHeart,
+    FiHome,
+    FiList,
+} from 'react-icons/fi';
 
-// Función helper para obtener el icono según el tipo
-const getTipoIcon = iconName => {
-    // Esta función puede ser expandida con más iconos si lo deseas
-    const icons = {
-        Database: '💾',
-        Briefcase: '💼',
-        Calendar: '📅',
-        AlertTriangle: '⚠️',
-        Clock: '⏰',
-        Star: '⭐',
-        Target: '🎯',
-        Book: '📚',
-        Heart: '❤️',
-        Home: '🏠',
-    };
-    return icons[iconName] || '📋';
+const TIPO_ICONS = {
+    Database: FiDatabase,
+    Briefcase: FiBriefcase,
+    Calendar: FiCalendar,
+    AlertTriangle: FiAlertTriangle,
+    Clock: FiClock,
+    Star: FiStar,
+    Target: FiTarget,
+    Book: FiBook,
+    Heart: FiHeart,
+    Home: FiHome,
+};
+
+const TipoIcon = ({ name, size = 13, className = '' }) => {
+    const Icon = TIPO_ICONS[name] || FiList;
+    return <Icon size={size} className={className} />;
 };
 
 export const Todos = ({ todos, deleteTodo, updateTodo, tiposTareas }) => {
@@ -28,112 +41,46 @@ export const Todos = ({ todos, deleteTodo, updateTodo, tiposTareas }) => {
 
     const getTodosByTipo = tipoId => {
         const todosFiltrados = todos.filter(todo => todo.type === tipoId);
-
-        // Si el tipo requiere tiempo, ordenar por hora
         const tipo = tiposTareas.find(t => t.id === tipoId);
+
         if (tipo?.requiresTime) {
             return [...todosFiltrados].sort((a, b) => {
-                // Primero los pendientes
-                if (a.state !== b.state) {
-                    return a.state ? 1 : -1;
-                }
-                // Luego por prioridad
-                if (a.priority !== b.priority) {
-                    return b.priority ? 1 : -1;
-                }
-                // Finalmente por hora
+                if (a.state !== b.state) return a.state ? 1 : -1;
+                if (a.priority !== b.priority) return b.priority ? 1 : -1;
                 if (!a.time) return 1;
                 if (!b.time) return -1;
                 return a.time.localeCompare(b.time);
             });
         }
 
-        // Para otros tipos, ordenar por estado y prioridad
         return [...todosFiltrados].sort((a, b) => {
-            // Primero los pendientes
-            if (a.state !== b.state) {
-                return a.state ? 1 : -1;
-            }
-            // Luego por prioridad
-            if (a.priority !== b.priority) {
-                return b.priority ? 1 : -1;
-            }
-            // Finalmente por fecha de creación (más recientes primero)
+            if (a.state !== b.state) return a.state ? 1 : -1;
+            if (a.priority !== b.priority) return b.priority ? 1 : -1;
             return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
         });
     };
 
     const todosActivos = getTodosByTipo(activeTab);
-    const tipoActivo = tiposTareas.find(t => t.id === activeTab);
 
     const getEmptyMessage = () => {
         const tipo = tiposTareas.find(t => t.id === activeTab);
         return tipo ? `No tienes tareas de ${tipo.nombre}` : 'No tienes tareas';
     };
 
-    // Función para obtener las clases de color
     const getColorClasses = color => {
         const colorMap = {
-            indigo: {
-                bg: 'bg-indigo-600',
-                hover: 'hover:bg-indigo-700',
-                text: 'text-indigo-400',
-            },
-            emerald: {
-                bg: 'bg-emerald-600',
-                hover: 'hover:bg-emerald-700',
-                text: 'text-emerald-400',
-            },
-            amber: {
-                bg: 'bg-amber-600',
-                hover: 'hover:bg-amber-700',
-                text: 'text-amber-400',
-            },
-            rose: {
-                bg: 'bg-rose-600',
-                hover: 'hover:bg-rose-700',
-                text: 'text-rose-400',
-            },
-            violet: {
-                bg: 'bg-violet-600',
-                hover: 'hover:bg-violet-700',
-                text: 'text-violet-400',
-            },
-            cyan: {
-                bg: 'bg-cyan-600',
-                hover: 'hover:bg-cyan-700',
-                text: 'text-cyan-400',
-            },
-            orange: {
-                bg: 'bg-orange-600',
-                hover: 'hover:bg-orange-700',
-                text: 'text-orange-400',
-            },
-            pink: {
-                bg: 'bg-pink-600',
-                hover: 'hover:bg-pink-700',
-                text: 'text-pink-400',
-            },
-            teal: {
-                bg: 'bg-teal-600',
-                hover: 'hover:bg-teal-700',
-                text: 'text-teal-400',
-            },
-            lime: {
-                bg: 'bg-lime-600',
-                hover: 'hover:bg-lime-700',
-                text: 'text-lime-400',
-            },
-            fuchsia: {
-                bg: 'bg-fuchsia-600',
-                hover: 'hover:bg-fuchsia-700',
-                text: 'text-fuchsia-400',
-            },
-            sky: {
-                bg: 'bg-sky-600',
-                hover: 'hover:bg-sky-700',
-                text: 'text-sky-400',
-            },
+            indigo: { bg: 'bg-indigo-600', text: 'text-indigo-400' },
+            emerald: { bg: 'bg-emerald-600', text: 'text-emerald-400' },
+            amber: { bg: 'bg-amber-600', text: 'text-amber-400' },
+            rose: { bg: 'bg-rose-600', text: 'text-rose-400' },
+            violet: { bg: 'bg-violet-600', text: 'text-violet-400' },
+            cyan: { bg: 'bg-cyan-600', text: 'text-cyan-400' },
+            orange: { bg: 'bg-orange-600', text: 'text-orange-400' },
+            pink: { bg: 'bg-pink-600', text: 'text-pink-400' },
+            teal: { bg: 'bg-teal-600', text: 'text-teal-400' },
+            lime: { bg: 'bg-lime-600', text: 'text-lime-400' },
+            fuchsia: { bg: 'bg-fuchsia-600', text: 'text-fuchsia-400' },
+            sky: { bg: 'bg-sky-600', text: 'text-sky-400' },
         };
         return colorMap[color] || colorMap.indigo;
     };
@@ -157,24 +104,31 @@ export const Todos = ({ todos, deleteTodo, updateTodo, tiposTareas }) => {
                                 }`}
                             >
                                 {tipo.icon && (
-                                    <span className="text-sm">
-                                        {getTipoIcon(tipo.icon)}
-                                    </span>
+                                    <TipoIcon
+                                        name={tipo.icon}
+                                        size={13}
+                                        className={
+                                            isActive
+                                                ? 'text-white'
+                                                : colors.text
+                                        }
+                                    />
                                 )}
                                 {tipo.nombre}
                             </button>
                         );
                     })}
                 </div>
+
                 <div className="flex gap-2 text-xs">
                     <div className="flex items-center gap-1.5 bg-slate-800/50 px-2 py-1 rounded-md">
-                        <Clock size={14} className="text-amber-400" />
+                        <FiClock size={14} className="text-amber-400" />
                         <span className="text-slate-300 font-medium">
                             {pendientes}
                         </span>
                     </div>
                     <div className="flex items-center gap-1.5 bg-slate-800/50 px-2 py-1 rounded-md">
-                        <CheckCircle2 size={14} className="text-emerald-400" />
+                        <FiCheckCircle size={14} className="text-emerald-400" />
                         <span className="text-slate-300 font-medium">
                             {completados}
                         </span>
@@ -195,7 +149,7 @@ export const Todos = ({ todos, deleteTodo, updateTodo, tiposTareas }) => {
                 {todosActivos.length === 0 && (
                     <div className="bg-slate-950/50 rounded-lg p-6 text-center">
                         <div className="flex flex-col items-center gap-2">
-                            <CheckCircle2
+                            <FiCheckCircle
                                 size={40}
                                 className="text-slate-700"
                             />

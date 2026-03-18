@@ -6,7 +6,7 @@ import { TipoTareaModal } from './components/TipoTareaModal';
 import { useTiposTareas } from './hooks/useTipoTareas';
 import useConfirmDialog from './hooks/useConfirmDialog';
 import ConfirmModal from './components/ConfirmModal';
-import { LogOut, User } from 'lucide-react';
+import { FiLogOut, FiUser, FiAlertTriangle } from 'react-icons/fi';
 import {
     collection,
     getDocs,
@@ -26,7 +26,7 @@ export const App = ({ user, onLogout }) => {
     const [useFirebase, setUseFirebase] = useState(true);
     const [isTiposModalOpen, setIsTiposModalOpen] = useState(false);
 
-    const { dialog, confirm, close, handleConfirm } = useConfirmDialog(); // 👈
+    const { dialog, confirm, close, handleConfirm } = useConfirmDialog();
     const { tiposTareas, addTipoTarea, editTipoTarea, deleteTipoTarea } =
         useTiposTareas();
 
@@ -52,7 +52,6 @@ export const App = ({ user, onLogout }) => {
                         setUseFirebase(true);
                     },
                     error => {
-                        console.error('❌ Error de Firebase:', error);
                         const localTodos = JSON.parse(
                             localStorage.getItem(`todos_${user.uid}`) || '[]'
                         );
@@ -62,7 +61,6 @@ export const App = ({ user, onLogout }) => {
                     }
                 );
             } catch (error) {
-                console.error('❌ Error al inicializar:', error);
                 const localTodos = JSON.parse(
                     localStorage.getItem(`todos_${user.uid}`) || '[]'
                 );
@@ -122,9 +120,7 @@ export const App = ({ user, onLogout }) => {
                     });
                     await Promise.all(resetPromises);
                     localStorage.setItem('lastDailyReset', now.toISOString());
-                } catch (error) {
-                    console.error('Error al resetear tareas diarias:', error);
-                }
+                } catch (error) {}
             } else {
                 setTodos(prev =>
                     prev.map(todo =>
@@ -140,8 +136,6 @@ export const App = ({ user, onLogout }) => {
 
     const addTodo = todo => setTodos(prev => [...prev, todo]);
 
-    // ─── Acciones con confirmación ────────────────────────────────────────────────
-
     const deleteTodo = id => {
         confirm({
             variant: 'danger',
@@ -152,9 +146,7 @@ export const App = ({ user, onLogout }) => {
                 if (useFirebase) {
                     try {
                         await deleteDoc(doc(db, 'todos', id));
-                    } catch (error) {
-                        console.error('Error al eliminar tarea:', error);
-                    }
+                    } catch (error) {}
                 }
                 setTodos(prev => prev.filter(todo => todo.id !== id));
             },
@@ -168,9 +160,7 @@ export const App = ({ user, onLogout }) => {
                 await updateDoc(doc(db, 'todos', id), {
                     state: !todoToUpdate.state,
                 });
-            } catch (error) {
-                console.error('Error al actualizar tarea:', error);
-            }
+            } catch (error) {}
         }
         setTodos(prev =>
             prev.map(todo =>
@@ -189,9 +179,7 @@ export const App = ({ user, onLogout }) => {
                 try {
                     await signOut(auth);
                     onLogout();
-                } catch (error) {
-                    console.error('Error al cerrar sesión:', error);
-                }
+                } catch (error) {}
             },
         });
     };
@@ -215,7 +203,7 @@ export const App = ({ user, onLogout }) => {
             <div className="max-w-7xl mx-auto">
                 <div className="mb-4 flex items-center justify-end gap-3">
                     <div className="bg-slate-900/50 rounded-lg px-4 py-2 flex items-center gap-2">
-                        <User size={16} className="text-indigo-400" />
+                        <FiUser size={16} className="text-indigo-400" />
                         <span className="text-sm text-slate-300">
                             {user.displayName || user.email}
                         </span>
@@ -224,16 +212,16 @@ export const App = ({ user, onLogout }) => {
                         onClick={handleLogout}
                         className="bg-slate-900/50 hover:bg-red-600/20 text-slate-300 hover:text-red-400 rounded-lg px-4 py-2 flex items-center gap-2 text-sm"
                     >
-                        <LogOut size={16} />
+                        <FiLogOut size={16} />
                         Cerrar sesión
                     </button>
                 </div>
 
                 {!useFirebase && (
                     <div className="mb-3 bg-amber-900/20 border border-amber-600/30 rounded-lg p-3">
-                        <p className="text-amber-400 text-xs text-center">
-                            ⚠️ Modo offline - Los datos se guardan en tu
-                            navegador
+                        <p className="text-amber-400 text-xs text-center flex items-center justify-center gap-2">
+                            <FiAlertTriangle size={13} />
+                            Modo offline - Los datos se guardan en tu navegador
                         </p>
                     </div>
                 )}
@@ -274,7 +262,6 @@ export const App = ({ user, onLogout }) => {
                 onDeleteTipo={deleteTipoTarea}
             />
 
-            {/* ── Confirm Modal ── */}
             <ConfirmModal
                 open={dialog.open}
                 onClose={close}
