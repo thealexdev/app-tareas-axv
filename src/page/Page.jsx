@@ -31,7 +31,6 @@ const Btn = ({
     const variants = {
         primary: 'text-white',
         ghost: 'text-slate-300 hover:text-white',
-        nav: 'text-slate-400 hover:text-white',
     };
     const styles = {
         primary: {
@@ -43,9 +42,7 @@ const Btn = ({
             background: 'rgba(255,255,255,0.05)',
             border: '1px solid rgba(255,255,255,0.09)',
         },
-        nav: {},
     };
-
     return (
         <button
             onClick={onClick}
@@ -192,22 +189,22 @@ export const Page = () => {
     const [mobileOpen, setMobileOpen] = useState(false);
     const [showTop, setShowTop] = useState(false);
 
-    useEffect(() => {
-        const onScroll = () => setShowTop(window.scrollY > 400);
-        window.addEventListener('scroll', onScroll, { passive: true });
-        return () => window.removeEventListener('scroll', onScroll);
-    }, []);
+    const NAV_LINKS = [
+        { label: 'Funciones', ref: featuresRef },
+        { label: 'Cómo funciona', ref: howRef },
+        { label: 'Para quién', ref: whoRef },
+    ];
 
     const scrollTo = ref => {
         ref.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
         setMobileOpen(false);
     };
 
-    const NAV_LINKS = [
-        { label: 'Funciones', ref: featuresRef },
-        { label: 'Cómo funciona', ref: howRef },
-        { label: 'Para quién', ref: whoRef },
-    ];
+    useEffect(() => {
+        const onScroll = () => setShowTop(window.scrollY > 400);
+        window.addEventListener('scroll', onScroll, { passive: true });
+        return () => window.removeEventListener('scroll', onScroll);
+    }, []);
 
     useEffect(() => {
         const link = document.createElement('link');
@@ -286,108 +283,150 @@ export const Page = () => {
             className="min-h-screen bg-[#050810] text-white overflow-x-hidden"
         >
             <style>{`
-                @keyframes fadeUp  { from{opacity:0;transform:translateY(28px)} to{opacity:1;transform:translateY(0)} }
-                @keyframes fadeIn  { from{opacity:0} to{opacity:1} }
-                @keyframes scanline{ 0%{transform:translateY(-100%)} 100%{transform:translateY(100vh)} }
+                @keyframes fadeUp  { from { opacity:0; transform:translateY(28px) } to { opacity:1; transform:translateY(0) } }
+                @keyframes fadeIn  { from { opacity:0 } to { opacity:1 } }
+                @keyframes scanline{ 0% { transform:translateY(-100%) } 100% { transform:translateY(100vh) } }
 
-                .fu{animation:fadeUp .75s cubic-bezier(.16,1,.3,1) both}
-                .fi{animation:fadeIn .5s ease both}
-                .d1{animation-delay:.10s} .d2{animation-delay:.20s} .d3{animation-delay:.30s}
-                .d4{animation-delay:.42s} .d5{animation-delay:.54s} .d6{animation-delay:.68s}
+                .fu { animation: fadeUp .75s cubic-bezier(.16,1,.3,1) both }
+                .fi { animation: fadeIn .5s ease both }
+                .d1 { animation-delay:.10s } .d2 { animation-delay:.20s } .d3 { animation-delay:.30s }
+                .d4 { animation-delay:.42s } .d5 { animation-delay:.54s } .d6 { animation-delay:.68s }
 
-                .display{font-family:'Outfit',sans-serif}
+                .display { font-family:'Outfit',sans-serif }
 
-                .glass{
-                    background:rgba(255,255,255,0.03);
-                    backdrop-filter:blur(16px);
-                    -webkit-backdrop-filter:blur(16px);
-                    border:1px solid rgba(255,255,255,0.07);
+                .glass {
+                    background: rgba(255,255,255,0.03);
+                    backdrop-filter: blur(16px);
+                    -webkit-backdrop-filter: blur(16px);
+                    border: 1px solid rgba(255,255,255,0.07);
                 }
-                .glass-card{
-                    background:rgba(255,255,255,0.025);
-                    backdrop-filter:blur(20px);
-                    -webkit-backdrop-filter:blur(20px);
-                    border:1px solid rgba(255,255,255,0.06);
-                    transition:background .3s,border-color .3s,transform .3s;
+                .glass-card {
+                    background: rgba(255,255,255,0.025);
+                    backdrop-filter: blur(20px);
+                    -webkit-backdrop-filter: blur(20px);
+                    border: 1px solid rgba(255,255,255,0.06);
+                    transition: background .3s, border-color .3s, transform .3s;
                 }
-                .glass-card:hover{ background:rgba(99,102,241,0.07); border-color:rgba(99,102,241,0.22); transform:translateY(-4px); }
-                .glass-active{ background:rgba(99,102,241,0.09)!important; border-color:rgba(99,102,241,0.32)!important; }
+                .glass-card:hover { background:rgba(99,102,241,0.07); border-color:rgba(99,102,241,0.22); transform:translateY(-4px); }
+                .glass-active     { background:rgba(99,102,241,0.09) !important; border-color:rgba(99,102,241,0.32) !important; }
 
-                .dot-grid{
-                    background-image:radial-gradient(rgba(255,255,255,0.033) 1px,transparent 1px);
-                    background-size:28px 28px;
+                .dot-grid {
+                    background-image: radial-gradient(rgba(255,255,255,0.033) 1px, transparent 1px);
+                    background-size: 28px 28px;
                 }
 
-                .hero-title{
+                .hero-title {
                     font-family:'Outfit',sans-serif;
                     font-weight:900;
-                    font-size:clamp(2.6rem,6.5vw,5.5rem);
-                    line-height:.95;
-                    letter-spacing:-.03em;
-                    text-transform:uppercase;
+                    font-size: clamp(2.2rem, 8vw, 5.5rem);
+                    line-height: .95;
+                    letter-spacing: -.03em;
+                    text-transform: uppercase;
                 }
-                .hero-sub{
+                .hero-sub {
                     font-family:'Outfit',sans-serif;
                     font-weight:300;
-                    font-size:clamp(.9rem,2vw,1.3rem);
-                    letter-spacing:.08em;
-                    text-transform:uppercase;
-                    color:rgba(255,255,255,.22);
+                    font-size: clamp(.8rem, 2.5vw, 1.3rem);
+                    letter-spacing: .08em;
+                    text-transform: uppercase;
+                    color: rgba(255,255,255,.22);
                 }
-                .section-label{
-                    display:inline-block;
+                .section-label {
+                    display: inline-block;
                     font-family:'Outfit',sans-serif;
-                    font-size:.6rem; font-weight:700;
-                    letter-spacing:.2em; text-transform:uppercase;
-                    color:rgba(99,102,241,.85);
+                    font-size: .6rem; font-weight: 700;
+                    letter-spacing: .2em; text-transform: uppercase;
+                    color: rgba(99,102,241,.85);
                 }
-                .section-title{
+                .section-title {
                     font-family:'Outfit',sans-serif;
-                    font-weight:800;
-                    font-size:clamp(2rem,4.5vw,3.2rem);
-                    letter-spacing:-.03em;
-                    text-transform:uppercase;
-                    line-height:1;
+                    font-weight: 800;
+                    font-size: clamp(1.6rem, 4vw, 3.2rem);
+                    letter-spacing: -.03em;
+                    text-transform: uppercase;
+                    line-height: 1;
                 }
-                .gradient-text{
-                    background:linear-gradient(135deg,#fff 0%,rgba(165,180,252,1) 100%);
-                    -webkit-background-clip:text;
-                    -webkit-text-fill-color:transparent;
-                    background-clip:text;
+                .gradient-text {
+                    background: linear-gradient(135deg, #fff 0%, rgba(165,180,252,1) 100%);
+                    -webkit-background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                    background-clip: text;
                 }
-                .scanline{
+                .scanline {
                     position:absolute; left:0; width:100%; height:2px;
-                    background:linear-gradient(90deg,transparent,rgba(99,102,241,.13),transparent);
-                    animation:scanline 7s linear infinite;
-                    pointer-events:none;
+                    background: linear-gradient(90deg, transparent, rgba(99,102,241,.13), transparent);
+                    animation: scanline 7s linear infinite;
+                    pointer-events: none;
                 }
-                .tag{
+                .tag {
                     font-family:'Outfit',sans-serif;
-                    font-size:.6rem; font-weight:700;
-                    letter-spacing:.14em; text-transform:uppercase;
-                    padding:4px 12px; border-radius:999px;
+                    font-size: .6rem; font-weight: 700;
+                    letter-spacing: .14em; text-transform: uppercase;
+                    padding: 4px 12px; border-radius: 999px;
                 }
-                .mockup-bar{ height:6px; border-radius:3px; background:rgba(255,255,255,0.07); }
-                .mockup-bar-fill{ height:100%; border-radius:3px; background:linear-gradient(90deg,#6366f1,#7c3aed); }
+                .mockup-bar      { height:6px; border-radius:3px; background:rgba(255,255,255,0.07); }
+                .mockup-bar-fill { height:100%; border-radius:3px; background:linear-gradient(90deg,#6366f1,#7c3aed); }
 
-                .nav-link{
-                    position:relative;
-                    font-size:.85rem; font-weight:500;
-                    color:rgba(255,255,255,.45);
-                    transition:color .2s;
-                    padding-bottom:2px;
+                .nav-link {
+                    position: relative;
+                    font-size: .85rem; font-weight: 500;
+                    color: rgba(255,255,255,.45);
+                    transition: color .2s;
+                    padding-bottom: 2px;
+                    background: none; border: none; cursor: pointer;
                 }
-                .nav-link::after{
+                .nav-link::after {
                     content:'';
                     position:absolute; bottom:0; left:0;
                     width:0; height:1px;
-                    background:rgba(99,102,241,.7);
-                    transition:width .25s ease;
+                    background: rgba(99,102,241,.7);
+                    transition: width .25s ease;
                 }
-                .nav-link:hover{ color:rgba(255,255,255,.9); }
-                .nav-link:hover::after{ width:100%; }
+                .nav-link:hover { color:rgba(255,255,255,.9); }
+                .nav-link:hover::after { width:100%; }
 
-                .logo-glow{ box-shadow:0 0 16px rgba(99,102,241,.5); }
+                .logo-glow { box-shadow: 0 0 16px rgba(99,102,241,.5); }
+
+                .scroll-top-btn {
+                    position:fixed; bottom:1.5rem; right:1.5rem; z-index:50;
+                    width:2.5rem; height:2.5rem; border-radius:.75rem;
+                    display:flex; align-items:center; justify-content:center;
+                    border:none; cursor:pointer;
+                    background: linear-gradient(135deg,#6366f1,#7c3aed);
+                    box-shadow: 0 4px 20px rgba(99,102,241,.45);
+                    transition: opacity .3s, transform .3s;
+                }
+
+                /* ── Mockup responsive ── */
+                .mockup-grid { display:grid; grid-template-columns:1fr 1fr; gap:.75rem; }
+                @media(min-width:640px) { .mockup-grid { grid-template-columns:1fr 1fr 1fr; } }
+
+                .mockup-progress { display:none; }
+                @media(min-width:640px) { .mockup-progress { display:block; } }
+
+                /* ── Use cases panel ── */
+                .cases-layout { display:flex; flex-direction:column; gap:1rem; }
+                @media(min-width:1024px) { .cases-layout { flex-direction:row; } }
+
+                .cases-tabs { display:flex; flex-direction:row; gap:.75rem; overflow-x:auto; padding-bottom:.25rem; }
+                @media(min-width:1024px) { .cases-tabs { flex-direction:column; width:12rem; flex-shrink:0; overflow-x:visible; } }
+
+                .cases-tab { flex-shrink:0; }
+                @media(min-width:1024px) { .cases-tab { flex-shrink:1; } }
+
+                /* ── Steps ── */
+                .steps-grid { display:grid; grid-template-columns:1fr; gap:1rem; }
+                @media(min-width:640px)  { .steps-grid { grid-template-columns:1fr 1fr; } }
+                @media(min-width:1024px) { .steps-grid { grid-template-columns:repeat(4,1fr); } }
+
+                /* ── Features ── */
+                .features-grid { display:grid; grid-template-columns:1fr; gap:1rem; }
+                @media(min-width:640px)  { .features-grid { grid-template-columns:1fr 1fr; } }
+                @media(min-width:1024px) { .features-grid { grid-template-columns:repeat(3,1fr); } }
+
+                /* ── Stats ── */
+                .stats-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+                @media(min-width:1024px) { .stats-grid { grid-template-columns:repeat(4,1fr); } }
             `}</style>
 
             <canvas
@@ -405,14 +444,14 @@ export const Page = () => {
                 <header
                     className="fi fixed top-0 left-0 right-0 z-50"
                     style={{
-                        background: 'rgba(5,8,16,0.75)',
+                        background: 'rgba(5,8,16,0.8)',
                         backdropFilter: 'blur(20px)',
                         WebkitBackdropFilter: 'blur(20px)',
                         borderBottom: '1px solid rgba(255,255,255,0.06)',
                     }}
                 >
-                    <div className="max-w-7xl mx-auto px-6 h-14 flex items-center justify-between gap-8">
-                        <div className="flex items-center gap-2.5 flex-shrink-0">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between gap-4">
+                        <div className="flex items-center gap-2 flex-shrink-0">
                             <div
                                 className="w-7 h-7 rounded-lg flex items-center justify-center logo-glow flex-shrink-0"
                                 style={{
@@ -462,7 +501,7 @@ export const Page = () => {
                     </div>
 
                     {mobileOpen && (
-                        <div className="md:hidden px-6 pb-4 flex flex-col gap-3 border-t border-[rgba(255,255,255,0.05)] pt-4">
+                        <div className="md:hidden px-4 pb-4 flex flex-col gap-3 border-t border-[rgba(255,255,255,0.05)] pt-4">
                             {NAV_LINKS.map(n => (
                                 <button
                                     key={n.label}
@@ -472,7 +511,7 @@ export const Page = () => {
                                     {n.label}
                                 </button>
                             ))}
-                            <div className="pt-2">
+                            <div className="pt-1">
                                 <Btn
                                     variant="primary"
                                     onClick={() => navigate('/login')}
@@ -486,7 +525,7 @@ export const Page = () => {
                 </header>
 
                 {/* ── HERO ── */}
-                <section className="relative min-h-screen flex flex-col items-center justify-center px-6 text-center overflow-hidden">
+                <section className="relative min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 text-center overflow-hidden py-20">
                     <div className="scanline" />
 
                     <div className="fu d1 mb-5">
@@ -503,17 +542,17 @@ export const Page = () => {
                         Avanza.
                     </h1>
 
-                    <p className="fu d3 hero-sub mb-7">
+                    <p className="fu d3 hero-sub mb-6">
                         Tu flujo de trabajo, simplificado.
                     </p>
 
-                    <p className="fu d4 text-slate-400 text-sm max-w-md leading-relaxed mb-8">
+                    <p className="fu d4 text-slate-400 text-sm max-w-sm sm:max-w-md leading-relaxed mb-8 px-2">
                         Gestiona tareas con prioridades, trabaja en bloques
                         Pomodoro y sincroniza todo en la nube desde una sola
                         app.
                     </p>
 
-                    <div className="fu d5 flex flex-wrap items-center justify-center gap-3 mb-16">
+                    <div className="fu d5 mb-12">
                         <Btn
                             variant="primary"
                             onClick={() => navigate('/login')}
@@ -521,39 +560,34 @@ export const Page = () => {
                         >
                             Ingresar gratis
                         </Btn>
-                        <Btn
-                            variant="ghost"
-                            icon={
-                                <FiPlay size={12} className="text-indigo-400" />
-                            }
-                        >
-                            Ver demo
-                        </Btn>
                     </div>
 
-                    <div className="fu d6 w-full max-w-3xl">
+                    {/* Mockup */}
+                    <div className="fu d6 w-full max-w-xs sm:max-w-xl md:max-w-2xl lg:max-w-3xl px-2">
                         <div
-                            className="glass rounded-3xl p-1"
+                            className="glass rounded-2xl sm:rounded-3xl p-1"
                             style={{
                                 boxShadow: '0 0 80px rgba(99,102,241,.12)',
                             }}
                         >
-                            <div className="rounded-[22px] overflow-hidden bg-[#0c0f1d] p-6">
-                                <div className="flex items-center gap-2 mb-5">
+                            <div className="rounded-[18px] sm:rounded-[22px] overflow-hidden bg-[#0c0f1d] p-4 sm:p-6">
+                                <div className="flex items-center gap-1.5 mb-4">
                                     {[0, 1, 2].map(i => (
                                         <div
                                             key={i}
-                                            className="w-2.5 h-2.5 rounded-full bg-slate-700"
+                                            className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-slate-700"
                                         />
                                     ))}
-                                    <div className="flex-1 mx-4 h-5 rounded-md bg-slate-800/60 flex items-center px-3">
+                                    <div className="flex-1 mx-3 h-5 rounded-md bg-slate-800/60 flex items-center px-3">
                                         <span className="text-slate-600 text-[10px]">
                                             app.flowdo.io
                                         </span>
                                     </div>
                                 </div>
-                                <div className="grid grid-cols-3 gap-3">
-                                    <div className="col-span-1 space-y-2">
+
+                                <div className="mockup-grid">
+                                    {/* Tasks col */}
+                                    <div className="space-y-2">
                                         {[
                                             {
                                                 label: 'Diseñar UI',
@@ -579,7 +613,7 @@ export const Page = () => {
                                         ].map((t, i) => (
                                             <div
                                                 key={i}
-                                                className="glass rounded-xl p-3 flex items-start gap-2"
+                                                className="glass rounded-xl p-2.5 sm:p-3 flex items-start gap-2"
                                             >
                                                 <div
                                                     className={`mt-0.5 w-4 h-4 rounded flex items-center justify-center flex-shrink-0 ${t.color}`}
@@ -592,7 +626,7 @@ export const Page = () => {
                                                     )}
                                                 </div>
                                                 <div>
-                                                    <div className="text-xs font-medium text-slate-300 leading-tight">
+                                                    <div className="text-[11px] sm:text-xs font-medium text-slate-300 leading-tight">
                                                         {t.label}
                                                     </div>
                                                     <div className="text-[10px] text-slate-600 mt-0.5">
@@ -602,25 +636,29 @@ export const Page = () => {
                                             </div>
                                         ))}
                                     </div>
-                                    <div className="glass rounded-xl p-4 flex flex-col items-center justify-center gap-2">
-                                        <div className="text-[10px] text-slate-500 uppercase tracking-widest">
+
+                                    {/* Pomodoro */}
+                                    <div className="glass rounded-xl p-3 sm:p-4 flex flex-col items-center justify-center gap-1.5">
+                                        <div className="text-[9px] sm:text-[10px] text-slate-500 uppercase tracking-widest">
                                             Pomodoro
                                         </div>
-                                        <div className="display font-black text-3xl text-white">
+                                        <div className="display font-black text-2xl sm:text-3xl text-white">
                                             24:13
                                         </div>
-                                        <div className="text-[10px] text-indigo-400 uppercase tracking-wider">
+                                        <div className="text-[9px] sm:text-[10px] text-indigo-400 uppercase tracking-wider">
                                             Enfocado
                                         </div>
-                                        <div className="w-full mt-2 mockup-bar">
+                                        <div className="w-full mt-1.5 mockup-bar">
                                             <div
                                                 className="mockup-bar-fill"
                                                 style={{ width: '38%' }}
                                             />
                                         </div>
                                     </div>
-                                    <div className="glass rounded-xl p-3">
-                                        <div className="text-[10px] text-slate-500 mb-3 uppercase tracking-wider">
+
+                                    {/* Progress — solo visible en sm+ */}
+                                    <div className="mockup-progress glass rounded-xl p-3">
+                                        <div className="text-[10px] text-slate-500 mb-2.5 uppercase tracking-wider">
                                             Progreso
                                         </div>
                                         {[
@@ -628,7 +666,7 @@ export const Page = () => {
                                             ['Estudio', '50%'],
                                             ['Hogar', '30%'],
                                         ].map(([l, v]) => (
-                                            <div key={l} className="mb-2.5">
+                                            <div key={l} className="mb-2">
                                                 <div className="flex justify-between text-[10px] text-slate-500 mb-1">
                                                     <span>{l}</span>
                                                     <span>{v}</span>
@@ -649,21 +687,21 @@ export const Page = () => {
                 </section>
 
                 {/* ── STATS ── */}
-                <section className="py-14 px-6 max-w-7xl mx-auto">
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                <section className="py-12 px-4 sm:px-6 max-w-7xl mx-auto">
+                    <div className="stats-grid">
                         {stats.map((s, i) => (
                             <div
                                 key={i}
-                                className="glass-card rounded-2xl p-5 text-center"
+                                className="glass-card rounded-2xl p-4 sm:p-5 text-center"
                             >
                                 <s.icon
                                     size={16}
-                                    className="text-indigo-400 mx-auto mb-3"
+                                    className="text-indigo-400 mx-auto mb-2.5"
                                 />
-                                <div className="display font-black text-2xl text-white mb-1">
+                                <div className="display font-black text-xl sm:text-2xl text-white mb-1">
                                     {s.value}
                                 </div>
-                                <div className="text-slate-500 text-xs">
+                                <div className="text-slate-500 text-xs leading-snug">
                                     {s.label}
                                 </div>
                             </div>
@@ -674,23 +712,26 @@ export const Page = () => {
                 {/* ── FEATURES ── */}
                 <section
                     ref={featuresRef}
-                    className="py-20 px-6 max-w-7xl mx-auto"
+                    className="py-16 sm:py-20 px-4 sm:px-6 max-w-7xl mx-auto"
                 >
-                    <div className="text-center mb-14">
+                    <div className="text-center mb-10 sm:mb-14">
                         <p className="section-label mb-3">Funciones</p>
                         <h2 className="section-title text-white mb-4">
                             Todo lo que
                             <br />
                             <span className="gradient-text">necesitas.</span>
                         </h2>
-                        <p className="text-slate-500 max-w-sm mx-auto text-sm leading-relaxed">
+                        <p className="text-slate-500 max-w-xs sm:max-w-sm mx-auto text-sm leading-relaxed">
                             Sin apps extras. Sin integraciones. Todo en un solo
                             lugar.
                         </p>
                     </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div className="features-grid">
                         {features.map((f, i) => (
-                            <div key={i} className="glass-card rounded-2xl p-6">
+                            <div
+                                key={i}
+                                className="glass-card rounded-2xl p-5 sm:p-6"
+                            >
                                 <div
                                     className={`inline-flex w-10 h-10 rounded-xl bg-gradient-to-br ${f.grad} border ${f.border} items-center justify-center mb-4`}
                                 >
@@ -708,8 +749,11 @@ export const Page = () => {
                 </section>
 
                 {/* ── HOW IT WORKS ── */}
-                <section ref={howRef} className="py-20 px-6 max-w-7xl mx-auto">
-                    <div className="text-center mb-14">
+                <section
+                    ref={howRef}
+                    className="py-16 sm:py-20 px-4 sm:px-6 max-w-7xl mx-auto"
+                >
+                    <div className="text-center mb-10 sm:mb-14">
                         <p className="section-label mb-3">Cómo funciona</p>
                         <h2 className="section-title text-white mb-4">
                             En 4 pasos,
@@ -717,11 +761,11 @@ export const Page = () => {
                             <span className="gradient-text">en flujo.</span>
                         </h2>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div className="steps-grid">
                         {steps.map((s, i) => (
                             <div
                                 key={i}
-                                className="relative glass-card rounded-2xl p-6 h-full"
+                                className="relative glass-card rounded-2xl p-5 sm:p-6"
                             >
                                 <div className="flex items-start justify-between mb-4">
                                     <div className="w-9 h-9 rounded-xl bg-indigo-500/15 border border-indigo-500/20 flex items-center justify-center">
@@ -741,7 +785,7 @@ export const Page = () => {
                                     {s.desc}
                                 </p>
                                 {i < steps.length - 1 && (
-                                    <div className="hidden md:flex absolute top-7 -right-2.5 z-10">
+                                    <div className="hidden lg:flex absolute top-7 -right-2.5 z-10">
                                         <FiArrowRight
                                             size={13}
                                             className="text-indigo-500/30"
@@ -754,8 +798,11 @@ export const Page = () => {
                 </section>
 
                 {/* ── USE CASES ── */}
-                <section ref={whoRef} className="py-20 px-6 max-w-7xl mx-auto">
-                    <div className="text-center mb-14">
+                <section
+                    ref={whoRef}
+                    className="py-16 sm:py-20 px-4 sm:px-6 max-w-7xl mx-auto"
+                >
+                    <div className="text-center mb-10 sm:mb-14">
                         <p className="section-label mb-3">Para quién</p>
                         <h2 className="section-title text-white mb-4">
                             Hecho para
@@ -764,22 +811,24 @@ export const Page = () => {
                                 personas reales.
                             </span>
                         </h2>
-                        <p className="text-slate-500 max-w-sm mx-auto text-sm leading-relaxed">
+                        <p className="text-slate-500 max-w-xs sm:max-w-sm mx-auto text-sm leading-relaxed">
                             No importa lo que hagas. Si tienes tareas, Flowdo
                             trabaja para ti.
                         </p>
                     </div>
-                    <div className="flex flex-col lg:flex-row gap-4">
-                        <div className="flex lg:flex-col gap-3 lg:w-48 flex-shrink-0">
+
+                    <div className="cases-layout">
+                        {/* Tabs */}
+                        <div className="cases-tabs">
                             {useCases.map((u, i) => (
                                 <button
                                     key={i}
                                     onClick={() => setActiveCase(i)}
-                                    className={`flex-1 lg:flex-none glass-card rounded-2xl p-4 text-left ${activeCase === i ? 'glass-active' : ''}`}
+                                    className={`cases-tab glass-card rounded-2xl p-3 sm:p-4 text-left ${activeCase === i ? 'glass-active' : ''}`}
                                 >
-                                    <div className="flex items-center gap-3">
+                                    <div className="flex items-center gap-2.5">
                                         <div
-                                            className={`w-7 h-7 rounded-xl flex items-center justify-center ${activeCase === i ? 'bg-indigo-500/20' : 'bg-slate-800/60'}`}
+                                            className={`w-7 h-7 rounded-xl flex items-center justify-center flex-shrink-0 ${activeCase === i ? 'bg-indigo-500/20' : 'bg-slate-800/60'}`}
                                         >
                                             <u.icon
                                                 size={13}
@@ -791,7 +840,7 @@ export const Page = () => {
                                             />
                                         </div>
                                         <span
-                                            className={`display font-bold text-sm ${activeCase === i ? 'text-white' : 'text-slate-500'}`}
+                                            className={`display font-bold text-sm whitespace-nowrap ${activeCase === i ? 'text-white' : 'text-slate-500'}`}
                                         >
                                             {u.role}
                                         </span>
@@ -799,22 +848,25 @@ export const Page = () => {
                                 </button>
                             ))}
                         </div>
-                        <div className="flex-1 glass-card rounded-2xl p-7">
-                            <div className="flex items-center gap-3 mb-5">
+
+                        {/* Panel */}
+                        <div className="flex-1 glass-card rounded-2xl p-5 sm:p-7">
+                            <div className="flex items-center gap-3 mb-5 flex-wrap">
                                 <span
                                     className={`tag ${useCases[activeCase].tagColor}`}
                                 >
                                     {useCases[activeCase].tag}
                                 </span>
-                                <h3 className="display font-black text-xl text-white uppercase tracking-tight">
+                                <h3 className="display font-black text-lg sm:text-xl text-white uppercase tracking-tight">
                                     {useCases[activeCase].role}
                                 </h3>
                             </div>
-                            <div className="grid sm:grid-cols-2 gap-3 mb-6">
+
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mb-5">
                                 {useCases[activeCase].items.map((item, j) => (
                                     <div
                                         key={j}
-                                        className="glass rounded-xl px-4 py-2.5 flex items-center gap-3"
+                                        className="glass rounded-xl px-3 sm:px-4 py-2.5 flex items-center gap-3"
                                     >
                                         <div className="w-4 h-4 rounded-md bg-indigo-500/20 flex items-center justify-center flex-shrink-0">
                                             <FiCheck
@@ -828,8 +880,9 @@ export const Page = () => {
                                     </div>
                                 ))}
                             </div>
-                            <div className="glass rounded-2xl p-5">
-                                <div className="flex items-center justify-between mb-4">
+
+                            <div className="glass rounded-2xl p-4 sm:p-5">
+                                <div className="flex items-center justify-between mb-3">
                                     <span className="text-slate-500 text-xs uppercase tracking-widest">
                                         Ejemplo de día
                                     </span>
@@ -853,12 +906,12 @@ export const Page = () => {
                                             )}
                                         </div>
                                         <span
-                                            className={`text-sm flex-1 ${j < 3 ? 'text-slate-600 line-through decoration-slate-700' : 'text-slate-200'}`}
+                                            className={`text-sm flex-1 min-w-0 truncate ${j < 3 ? 'text-slate-600 line-through decoration-slate-700' : 'text-slate-200'}`}
                                         >
                                             {item}
                                         </span>
                                         <span
-                                            className={`text-[10px] px-2 py-0.5 rounded-full ${j === 0 ? 'bg-rose-500/15 text-rose-400' : j === 1 ? 'bg-amber-500/15 text-amber-400' : j === 2 ? 'bg-sky-500/15 text-sky-400' : 'bg-slate-800/80 text-slate-500'}`}
+                                            className={`text-[10px] px-2 py-0.5 rounded-full flex-shrink-0 ${j === 0 ? 'bg-rose-500/15 text-rose-400' : j === 1 ? 'bg-amber-500/15 text-amber-400' : j === 2 ? 'bg-sky-500/15 text-sky-400' : 'bg-slate-800/80 text-slate-500'}`}
                                         >
                                             {
                                                 [
@@ -877,9 +930,9 @@ export const Page = () => {
                 </section>
 
                 {/* ── CTA ── */}
-                <section className="py-20 px-6 max-w-4xl mx-auto">
+                <section className="py-16 sm:py-20 px-4 sm:px-6 max-w-4xl mx-auto">
                     <div
-                        className="glass relative rounded-3xl p-12 sm:p-16 text-center overflow-hidden"
+                        className="glass relative rounded-2xl sm:rounded-3xl p-8 sm:p-12 lg:p-16 text-center overflow-hidden"
                         style={{ boxShadow: '0 0 80px rgba(99,102,241,.1)' }}
                     >
                         <div
@@ -890,7 +943,7 @@ export const Page = () => {
                             }}
                         />
                         <div className="scanline" />
-                        <p className="section-label mb-5 relative">
+                        <p className="section-label mb-4 sm:mb-5 relative">
                             Empieza ahora
                         </p>
                         <h2 className="section-title relative text-white mb-4">
@@ -898,7 +951,7 @@ export const Page = () => {
                             <br />
                             <span className="gradient-text">hoy.</span>
                         </h2>
-                        <p className="relative text-slate-400 text-sm leading-relaxed max-w-md mx-auto mb-8">
+                        <p className="relative text-slate-400 text-sm leading-relaxed max-w-xs sm:max-w-md mx-auto mb-7 sm:mb-8">
                             Crea tu cuenta en segundos. Gratis para siempre. Sin
                             tarjeta de crédito.
                         </p>
@@ -922,10 +975,8 @@ export const Page = () => {
                     onClick={() =>
                         window.scrollTo({ top: 0, behavior: 'smooth' })
                     }
-                    className="fixed bottom-6 right-6 z-50 w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300"
+                    className="scroll-top-btn"
                     style={{
-                        background: 'linear-gradient(135deg,#6366f1,#7c3aed)',
-                        boxShadow: '0 4px 20px rgba(99,102,241,.45)',
                         opacity: showTop ? 1 : 0,
                         transform: showTop
                             ? 'translateY(0) scale(1)'
@@ -937,7 +988,7 @@ export const Page = () => {
                 </button>
 
                 {/* ── FOOTER ── */}
-                <footer className="border-t border-[rgba(255,255,255,0.06)] py-7 px-6">
+                <footer className="border-t border-[rgba(255,255,255,0.06)] py-6 sm:py-7 px-4 sm:px-6">
                     <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
                         <div className="flex items-center gap-2">
                             <div
@@ -953,10 +1004,10 @@ export const Page = () => {
                                 Flowdo
                             </span>
                         </div>
-                        <p className="text-slate-700 text-xs">
+                        <p className="text-slate-700 text-xs order-last sm:order-none">
                             {new Date().getFullYear()} — Hecho con intención.
                         </p>
-                        <div className="flex items-center gap-6">
+                        <div className="flex items-center gap-5 sm:gap-6">
                             {['Privacidad', 'Términos', 'Soporte'].map(l => (
                                 <a
                                     key={l}
